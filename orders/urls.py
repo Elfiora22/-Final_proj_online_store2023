@@ -3,8 +3,8 @@ from .views import *
 
 
 urlpatterns =[
-    #path('', index),
-    #path('orders/', orders_page),
+    path('cart/list/<token>/', UpdateCart.as_view()),
+    
 ]
 
 

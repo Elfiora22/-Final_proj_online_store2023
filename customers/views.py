@@ -27,7 +27,6 @@ class CustomerCreate(APIView):
         return Response(status=HTTP_201_CREATED, data=responce)   
 
 
-
 class GetAuthCustomer(generics.RetrieveAPIView):
     serializer_class = CustomerSerializer
 
