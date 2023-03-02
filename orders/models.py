@@ -32,7 +32,7 @@ class OrderProduct(models.Model):
         verbose_name_plural = 'Orders products'
 
     def __str__(self):
-        return self.product
+        return str(self.product)
 
 
 

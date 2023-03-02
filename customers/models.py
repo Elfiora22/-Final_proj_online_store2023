@@ -23,10 +23,11 @@ class Customer(models.Model):
 
 
 class CustomerAddress(models.Model):
-    city = models.CharField(max_length=100, blank=False, null=False)
-    post_code = models.IntegerField(blank=False, null=False)
-    address = models.CharField(max_length=300, blank=False, null=False)
-    customer = models.ForeignKey("customers.Customer", on_delete=models.CASCADE)
+    city = models.CharField(max_length=50, blank=False, null=False, verbose_name='City')
+    post_code = models.IntegerField(blank=False, null=False, verbose_name='Post Code')
+    country = models.CharField(max_length=50, blank=True, null=True, verbose_name='Country')
+    address = models.CharField(max_length= 200, default='', blank=False, null=False, verbose_name='Street-address')
+    customer = models.ForeignKey("customers.Customer", blank=False, null=False, on_delete=models.CASCADE, verbose_name='Customer')
 
     class Meta:
         db_table = 'customer_addresses'

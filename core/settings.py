@@ -131,5 +131,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     #'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 2
+    #'PAGE_SIZE': 2
 }
+
+AWS_ACCESS_KEY_ID = "JJBJJZZu8oiGrZj8"
+AWS_SECRET_ACCESS_KEY = "lK2MRM721LdpJ2x4f5qrariQpr7JfECk"
+AWS_STORAGE_BUCKET_NAME = "online-store"
+AWS_S3_ENDPOINT_URL = "http://127.0.0.1:9000/"
+
+# django < 4.2
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# django >= 4.2
+# STORAGES = {"default": "storages.backends.s3boto3.S3Boto3Storage"}

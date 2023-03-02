@@ -31,6 +31,7 @@ class GetAuthCustomer(generics.RetrieveAPIView):
     serializer_class = CustomerSerializer
 
 
+
 class MyOrders(generics.ListAPIView):
     serializer_class = MyOrderdSerializer
     authentication_classes = (JWTAuthentication, )
