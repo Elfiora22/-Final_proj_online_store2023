@@ -4,7 +4,6 @@ from orders.models import OrderProduct, Order
 from products.models import Product
 from customers.models import Customer, CustomerAddress
 from rest_framework.response import Response
-from rest_framework.request import Request
 from rest_framework import status, generics
 from uuid import *
 from .serializers import OrderProductSerializer, OrderSerializer
@@ -94,17 +93,17 @@ class CartList(generics.ListAPIView):
         
 
 class FinalizeOrder(APIView):
-    serializer_class= OrderSerializer#хочется знать, уместен ли тут это?
+    serializer_class= OrderSerializer#хочется знать, уместно ли тут это?
     queryset = Order.objects.all() 
     http_method_names = ['put',]
-    def finalize_order_set(self, request, *args, **kwargs):
-        try:
-            try: #Retrieving a customer_order and order__customer__token  ????нам ведь нужен именно покупатель, у которого есть товар в корзине, так? 
-                customer = OrderProduct.objects.get(
+    def finalize_order_set(self, request, responce, *args, **kwargs):
+        try: #????нам ведь нужен именно покупатель, у которого есть товар в корзине, так? 
+            try: #Retrieving: order_product__customer  
+                customer = OrderProduct.objects.filter(#
                     order__customer=self.request.data['order__customer'],
-                    order__is_ordered=False
+                    order_product__is_ordered=False
                     )
-                token = OrderProduct.objects.get(
+                token = OrderProduct.objects.filter(# retrieving order_product__customer__token 
                     order__customer__token=self.request.data['order__customer__token'], 
                     order__is_ordered=False
                     )
@@ -114,13 +113,12 @@ class FinalizeOrder(APIView):
                     'error': 'Customer does not exist'
                 }
                 return Response(data=responce, status=status.HTTP_400_BAD_REQUEST)
-
             try:
-                #Checking unfinished  orders (when is_ordered=False) for the customer 
-                order = OrderProduct.objects.get(
-                    order_product__order =self.request.data['order'], 
-                    order_customer=customer, 
-                    order_is_ordered=False
+                #Checking unfinished  orders in order_product (when is_ordered=False) for the customer 
+                order = OrderProduct.objects.filter(
+                    order =self.request.data['order'], 
+                    order__customer=customer, 
+                    order__is_ordered=False
                     )
             except order is None:
                 responce = {
@@ -129,7 +127,7 @@ class FinalizeOrder(APIView):
                 }
                 return Response(data=responce, status=status.HTTP_400_BAD_REQUEST)
             try:
-            #Rertrieving customer data - Customer  Model
+            #Rertrieving customer data using Customer  Model  and saving them
                 customer.first_name = Customer.objects.get_or_create(first_name=self.request.data['first_name'])
                 customer.last_name = Customer.objects.get_or_create(last_name=self.request.data['last_name'])
                 customer.email = Customer.objects.get_or_create(email=self.request.data['email'])
@@ -144,19 +142,19 @@ class FinalizeOrder(APIView):
                 return Response(data=responce, status=status.HTTP_400_BAD_REQUEST)
                     
             try:
-                ##Rertrieving CustomerAddress data - CustomerAddress Model
-                customer.address_city = CustomerAddress.objects.get_or_create(city=self.request.data['city'], customer=customer)
-                customer.address_post_code = CustomerAddress.objects.get_or_create(post_code=self.request.data['post_code'], customer=customer)
-                customer.address_country = CustomerAddress.objects.get_or_create(country=self.request.data['country'], customer=customer)
-                customer = CustomerAddress.objects.get_or_create(customer=self.request.data['customer'])
-                customer.address_address =CustomerAddress.objects.get_or_create(customer_address=self.request.data['customer_address'], customer=customer)
+                ##Rertrieving CustomerAddress data using CustomerAddress Model and saving them
+                customer.address_city = CustomerAddress.objects.filter(city=self.request.data['city'], customer=customer)
+                customer.address_post_code = CustomerAddress.objects.filter(post_code=self.request.data['post_code'], customer=customer)
+                customer.address_country = CustomerAddress.objects.filter(country=self.request.data['country'], customer=customer)
+                customer.address_address =CustomerAddress.objects.filter(customer_address=self.request.data['customer_address'], customer=customer)
                 customer.customer_address.save()
             except CustomerAddress.DoesNotExist:
                 responce ={
                 'status': False,
-                'error': 'Customer does not exist'
+                'error': 'Customer address does not exist'
                 }
-                return Response(data=responce, status=status.HTTP_400_BAD_REQUEST)        
+                return Response(data=responce, status=status.HTTP_400_BAD_REQUEST) 
+            #Creating request       
             request = {
                 'first_name': customer.first_name,
                 'last_name': customer.last_name,
@@ -178,7 +176,7 @@ class FinalizeOrder(APIView):
                 customer_shipping_address= order_serializer.validated_data['customer_shipping_address']
                 is_ordered = order_serializer.validated_data['True']
                 order_serializer.save()
-            #Formatting final responce:
+            #Creating final(main) responce:??? может, здесь надо  try: finally:?
             responce = {
                 'id': order,
                 'time-created': time_created,

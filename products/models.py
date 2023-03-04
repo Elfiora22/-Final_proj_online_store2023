@@ -7,7 +7,7 @@ class Product(models.Model):
     old_price = models.DecimalField(default=0, max_digits = 9, decimal_places = 2, null=False, blank=False)
     quantity = models.IntegerField(default=1, null=False, blank=False)
     brand = models.ForeignKey("products.Brand", null=True, blank=True, on_delete = models.SET_NULL)
-    photo = models.FileField(null=True, blank=True)
+    photo = models.FileField(null=True, blank=True, default=None)
     description = models.TextField(null=True, blank=True)
 
     class Meta:
