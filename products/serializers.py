@@ -9,9 +9,10 @@ class BrandField(serializers.RelatedField):
     def to_representation(self, value):
         return {"id": value.id, "title": value.title}
 
+
 class PhotoField(serializers.RelatedField):
     def to_representation(self, value):
-        return {}    
+        return {"id":value.id, "title": value.title}    
 
 
 class ProductReviewSerializer(serializers.ModelSerializer):
@@ -27,7 +28,7 @@ class ProductSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Product
-        fields = ("id", "title", "price", "old_price", "description", "brand", "photo" "quantity", "reviews")
+        fields = ("id", "title", "price", "old_price", "description", "brand", "photo", "quantity", "reviews")
 
        
 class ProductListSerializer(serializers.ModelSerializer):
