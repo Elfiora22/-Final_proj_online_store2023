@@ -10,7 +10,7 @@ from customers.models import *
 from orders.models import Order
 User = get_user_model()
 
-
+#user creation and auth
 class UserAuthorizationTestCase(APITestCase):
     #create a new user 
     def setUp(self):
@@ -19,6 +19,7 @@ class UserAuthorizationTestCase(APITestCase):
             username='tesstuser',
             password='Nothanks2'
         )
+    #login user
     def test_user_authorization(self, *args, **kwargs):
         # Log in the user
         response = self.client.post(reverse('token_obtain_pair'), 
@@ -26,7 +27,7 @@ class UserAuthorizationTestCase(APITestCase):
             'username': 'tesstuser', 
             'password': 'Nothanks2'
             })
-        print("New user created!")
+        print("New user logged in!")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Extract the access token from the response
         access_token = response.data['access']
@@ -37,7 +38,7 @@ class UserAuthorizationTestCase(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION='')
 
 
-
+#creatinh a customer
 class CustomerTestCase(APITestCase):
     authentication_classes = (JWTAuthentication, )#PROCEEDING REGISTRATION WITH AUTHENTICATED USER
     def test_customer_create(self):
@@ -52,6 +53,7 @@ class CustomerTestCase(APITestCase):
             'customer_token': customer_token
         }
         response = self.client.post(url, data=request_data, format='json')
+        print("Customer created!")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
 
@@ -64,8 +66,8 @@ class CustomerUserRegistration(APITestCase):
                 'username': 'tesstuser', 
                 'password': 'Nothanks2'
             })
-            print("New user created!")
-        # Extract the access token from the response
+            print("User logged in!")
+        # Extracting the access token from the response
             access_token = response.data['access']
             self.client = APIClient()
             self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
@@ -84,9 +86,11 @@ class CustomerUserRegistration(APITestCase):
             url = reverse('registration')
             response = self.client.post(url, request_data, format='json')
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        
-        # # Checking that the user was created
+        # user was created
             self.assertTrue(User.objects.filter(username='tesstuser').exists())
+
+
+
             
 
         

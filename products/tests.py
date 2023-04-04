@@ -16,6 +16,7 @@ class InitProductData:
                 brand=brand,
                 description='some description'
             )
+#one more init for fun            
 class InitNewProductData:
     def __init__(self):
         brand = Brand.objects.create(title='BrandNew')
@@ -32,7 +33,7 @@ class InitNewProductData:
             product=product
         )            
 
-
+#product list with the pagination
 class ProductListTest(APITestCase):
     def test_product(self):
         url = reverse('list_of_products')
@@ -78,7 +79,7 @@ class ProductListTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertGreater(Product.objects.count(), 2)
 
-
+#search filters
 class ProductFilters(APITestCase): 
     #searching product by title test  
     def test_product_filterBy_title(self):
@@ -137,7 +138,7 @@ class Createproduct(APITestCase):
     def test_create_product(self):
         brand = Brand.objects.create(title='BrandNew')
         review = ProductReview.objects.create(
-            review='',
+            review='review',
         )            
         InitNewProductData()
         requesting = {
@@ -147,7 +148,7 @@ class Createproduct(APITestCase):
             "quantity": 1,
             "brand": brand.id,
             'description': 'very stylish and useful thing',
-            'review': ['',]
+            'review': ['review',]
         }
         url = reverse('create_product')
         data = {
@@ -164,7 +165,7 @@ class Createproduct(APITestCase):
         print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-
+# update, delete product
 class NewProductActions(APITestCase):
     #updating product
     def test_update_product(self):
