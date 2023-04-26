@@ -19,7 +19,7 @@ class UserAuthorizationTestCase(APITestCase):
             username='tesstuser',
             password='Nothanks2'
         )
-    #login user
+
     def test_user_authorization(self, *args, **kwargs):
         # Log in the user
         response = self.client.post(reverse('token_obtain_pair'), 

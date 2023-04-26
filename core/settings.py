@@ -11,39 +11,49 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+from  os import getenv, system, path
 
+
+load_dotenv(dotenv_path=Path(".env"))
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR_MIGRATIONS = path.join(BASE_DIR, getenv("DJANGO_MIGRATIONS_DIR"))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)y+ps6lg#ydpx^%h#-r(^j@nydf#^bgq-z(3=@h+=+sn(5#@)l'
+SECRET_KEY = getenv("DJANGO_SECRET_KEY")
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = getenv("DJANGO_DEBUG", False)
 
 ALLOWED_HOSTS = []
 
 
 # Application definition
+MIGRATION_APPS = [ 
+    'products',
+    'orders', 
+    'customers',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    'django.contrib.sessions',  
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
     'django_filters',
-    'products',
-    'orders',
-    'customers',
 ]
+
+INSTALLED_APPS = INSTALLED_APPS + MIGRATION_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -78,13 +88,26 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+DB_TYPE=getenv("DB_TYPE", "sqlite3")
+if DB_TYPE == "sqlite3":
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
+elif DB_TYPE == "postgres":
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': getenv("DB_NAME"),
+                'USER': getenv("DB_USER"),
+                'PASSWORD': getenv("DB_PASSWORD"),
+                "HOST": getenv("DB_HOST"),
+                "PORT": getenv("DB_PORT"),
+            }
+        }
+                
 
 
 # Password validation
@@ -143,3 +166,13 @@ AWS_S3_ENDPOINT_URL = "http://127.0.0.1:9000/"
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 # django >= 4.2
 # STORAGES = {"default": "storages.backends.s3boto3.S3Boto3Storage"}
+
+
+STATIC_ROOT = BASE_DIR / "static"
+
+MIGRATION_MODULES = {}
+for app in MIGRATION_APPS:
+    #MIGRATION_MODULES[app] = f"db.migrations.{app}"
+    MIGRATION_MODULES[app] =  getenv("DJANGO_MIGRATIONS_DIR").replace("/", ".") + "." + app
+    system(f"mkdir -p {BASE_DIR_MIGRATIONS}/{app}")
+    system(f"touch {BASE_DIR_MIGRATIONS}/{app}/__init__.py")
