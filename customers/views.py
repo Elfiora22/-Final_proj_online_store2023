@@ -45,7 +45,7 @@ class UserCreate(APIView):
         
 class CustomerCreate(APIView):
     http_method_names = ['post']
-    def post(self, *args, **qargs):
+    def post(self, *args, **kwargs):
         client_ip = self.request.META.get('REMOTE_ADDR')
         client_agent = self.request.META.get('HTTP_USER_AGENT')
         print('IP:', client_ip)

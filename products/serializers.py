@@ -12,7 +12,7 @@ class BrandField(serializers.RelatedField):
 
 class PhotoField(serializers.RelatedField):
     def to_representation(self, value):
-        return {"id":value.id, "title": value.title}    
+        return  value.photo.url    
 
 
 class ProductReviewSerializer(serializers.ModelSerializer):
@@ -25,6 +25,7 @@ class ProductReviewSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     brand = BrandField(many=False, read_only=True)
     reviews = ProductReviewSerializer(many=True, read_only=True)
+    photo = PhotoField(read_only=True)
     
     class Meta:
         model = Product
@@ -33,6 +34,7 @@ class ProductSerializer(serializers.ModelSerializer):
        
 class ProductListSerializer(serializers.ModelSerializer):
     brand = BrandField(many=False, read_only=True)
+    photo = PhotoField(read_only=True)
 
     class Meta:
         model = Product

@@ -31,7 +31,8 @@ SECRET_KEY = getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = getenv("DJANGO_DEBUG", False)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*",]
+CSRF_TRUSTED_ORIGINS=["http://127.0.0.1:9999",]
 
 
 # Application definition
@@ -157,13 +158,15 @@ REST_FRAMEWORK = {
     #'PAGE_SIZE': 2
 }
 
-AWS_ACCESS_KEY_ID = "JJBJJZZu8oiGrZj8"
-AWS_SECRET_ACCESS_KEY = "lK2MRM721LdpJ2x4f5qrariQpr7JfECk"
-AWS_STORAGE_BUCKET_NAME = "online-store"
-AWS_S3_ENDPOINT_URL = "http://127.0.0.1:9000/"
+AWS_ACCESS_KEY_ID = getenv("MINIO_ACCESS_KEY")
+AWS_SECRET_ACCESS_KEY =  getenv("MINIO_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = getenv("MINIO_BUCKET_NAME")
+AWS_S3_ENDPOINT_URL = f"http://{getenv('MINIO_ENDPOINT_URL')}:{getenv('MINIO_PORT')}"
+MINIO_EXT_ENDPOINT =getenv("MINIO_EXT_ENDPOINT") 
 
 # django < 4.2
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+#DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+DEFAULT_FILE_STORAGE = "core.storage.FixUrlStorage"
 # django >= 4.2
 # STORAGES = {"default": "storages.backends.s3boto3.S3Boto3Storage"}
 
